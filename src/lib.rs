@@ -1,6 +1,6 @@
 use serenity::{
     model::{
-        channel::{ChannelType, GuildChannel},
+        channel::{Channel, ChannelType, GuildChannel},
         guild::Guild,
     },
     prelude::*,
@@ -22,10 +22,16 @@ pub enum GetError {
 
 impl<'a, T: Ord> Storage<'a, T> {
     pub async fn new(mut guild: Guild, ctx: &'a Context) -> SResult<Storage<'a, T>> {
-        let channel = guild.channels.values_mut().find(|c| c.name == "storage");
+        let channel = guild.channels.values_mut().find(|c| match c {
+            Channel::Guild(c) => c.name == "storage",
+            _ => unreachable!(),
+        });
 
         let channel = match channel {
-            Some(c) => c.clone(),
+            Some(c) => match c {
+                Channel::Guild(c) => c.clone(),
+                _ => unreachable!(),
+            },
             None => {
                 guild
                     .create_channel(&ctx.http, |c| {
