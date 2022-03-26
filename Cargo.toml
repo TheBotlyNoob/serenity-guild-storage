@@ -6,4 +6,9 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-serenity = { git = "https://github.com/serenity-rs/serenity", branch = "next" }
+serenity = { git = "https://github.com/serenity-rs/serenity", branch = "next", default-features = false, features = [
+  "rustls_backend",
+  "standard_framework",
+  "gateway",
+  "model",
+] }

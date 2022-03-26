@@ -8,11 +8,11 @@ use serenity::{
 };
 use std::{any::Any, collections::BTreeMap};
 
-pub struct Storage<'a, T: Ord> {
+pub struct Storage<T: Ord> {
     pub guild: Guild,
-    pub data: BTreeMap<T, Box<dyn Any>>,
+    pub data: BTreeMap<T, Box<dyn Any + Send + Sync>>,
     pub channel: GuildChannel,
-    pub ctx: &'a Context,
+    pub ctx: Box<Context>,
 }
 
 pub enum GetError {
@@ -20,8 +20,8 @@ pub enum GetError {
     WrongType,
 }
 
-impl<'a, T: Ord> Storage<'a, T> {
-    pub async fn new(mut guild: Guild, ctx: &'a Context) -> SResult<Storage<'a, T>> {
+impl<T: Ord> Storage<T> {
+    pub async fn new(mut guild: Guild, ctx: Box<Context>) -> SResult<Self> {
         let channel = guild.channels.values_mut().find(|c| match c {
             Channel::Guild(c) => c.name == "storage",
             _ => unreachable!(),
@@ -70,7 +70,7 @@ impl<'a, T: Ord> Storage<'a, T> {
         Ok(())
     }
 
-    pub fn write(&mut self, key: T, value: Box<dyn Any>) {
+    pub fn write(&mut self, key: T, value: Box<dyn Any + Send + Sync>) {
         self.data.insert(key, value);
     }
 
