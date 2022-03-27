@@ -7,8 +7,11 @@ edition = "2021"
 
 [dependencies]
 serenity = { git = "https://github.com/serenity-rs/serenity", branch = "next", default-features = false, features = [
-  "rustls_backend",
-  "client",
-  "gateway",
-  "model",
+    "rustls_backend",
+    "client",
+    "gateway",
+    "model",
+    "cache",
 ] }
+serde = "1.0"
+ron = "0.7"
